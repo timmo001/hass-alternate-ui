@@ -19,6 +19,7 @@ import Logo from './logo.svg';
 
 const styles = theme => ({
   grid: {
+    position: 'fixed',
     height: '100%',
   },
   media: {
