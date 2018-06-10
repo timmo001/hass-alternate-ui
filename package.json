@@ -10,6 +10,7 @@
     "home-assistant-js-websocket": "^2.0.1",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
+    "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
     "superagent": "^3.8.3",
     "typeface-roboto": "^0.0.54"
