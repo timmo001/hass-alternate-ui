@@ -14,6 +14,8 @@ import Navigation from './Navigation';
 
 const styles = theme => ({
   root: {
+    position: 'absolute',
+    paddingBottom: 8,
     minHeight: '100%',
     backgroundColor: theme.palette.background[200],
   },
