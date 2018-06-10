@@ -34,7 +34,7 @@ class Navigation extends React.Component {
   };
 
   render() {
-    const { classes, entities, page } = this.props;
+    const { classes, pages, page } = this.props;
 
     return (
       <BottomNavigation
@@ -45,13 +45,11 @@ class Navigation extends React.Component {
 
         <BottomNavigationAction
           className={classes.action}
-          value={entities.find(entity => entity[0] === 'group.default_view')}
+          value={pages.find(entity => entity[0] === 'group.default_view')}
           label={'Home'}
           icon={<i className={classNames('mdi', 'mdi-home', classes.icon)} />} />
 
-        {entities.filter(entity => {
-          return entity[0].startsWith('group.') && entity[1].attributes.view && entity[0] !== 'group.default_view'
-        }).map(page => {
+        {pages.map(page => {
           return (
             <BottomNavigationAction
               key={page[1].attributes.order}
@@ -71,7 +69,7 @@ class Navigation extends React.Component {
 
 Navigation.propTypes = {
   classes: PropTypes.object.isRequired,
-  entities: PropTypes.array.isRequired,
+  pages: PropTypes.array.isRequired,
   page: PropTypes.array.isRequired,
   handlePageChange: PropTypes.func.isRequired,
 };

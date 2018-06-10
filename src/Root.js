@@ -57,7 +57,33 @@ class Root extends Component {
             // console.log('New entities!', entities);
             const entitiesArr = Object.entries(entities);
             const page = entitiesArr.find(entity => entity[0] === 'group.default_view');
-            this.setState({ entities: entitiesArr, page });
+
+            // Get groups and entites
+            const groups = entitiesArr.filter(thePage => {
+              return page[1].attributes.entity_id.indexOf(thePage[0]) > -1
+            });
+            // console.log('groups:', groups);
+            const entitiesItemsArr = [];
+            groups.map(group => {
+              const items = entitiesArr.filter(entity => {
+                return group[1].attributes.entity_id.indexOf(entity[0]) > -1
+              });
+              return entitiesItemsArr.push({
+                name: group[0],
+                friendly_name: group[1].attributes.friendly_name,
+                order: group[1].attributes.order,
+                items,
+              });
+            });
+            entitiesItemsArr.sort((a, b) => a.order > b.order);
+            // console.log('entitiesItemsArr:', entitiesItemsArr);
+
+            // Pages
+            const pages = entitiesArr.filter(entity => {
+              return entity[0].startsWith('group.') && entity[1].attributes.view && entity[0] !== 'group.default_view'
+            })
+
+            this.setState({ entities: entitiesItemsArr, pages, page });
           });
           subscribeConfig(conn, config => {
             // console.log('New config!', config);
@@ -83,7 +109,7 @@ class Root extends Component {
 
   render() {
     const { classes } = this.props;
-    const { /*title,*/ entities, page, snackMessage } = this.state;
+    const { /*title,*/snackMessage, entities, page, pages } = this.state;
 
     return (
       <div className={classes.root}>
@@ -96,19 +122,20 @@ class Root extends Component {
         </AppBar> */}
 
         {entities ?
-          <div>
-            <Main
-              entities={entities}
-              page={page} />
-            <Navigation
-              entities={entities}
-              page={page}
-              handlePageChange={this.handlePageChange} />
-          </div>
+          <Main
+            entities={entities}
+            page={page} />
           : !localStorage.getItem('host') ?
             <Login login={this.connectToHASS} />
             :
             <CircularProgress className={classes.progress} size={50} />
+        }
+
+        {entities &&
+          <Navigation
+            pages={pages}
+            page={page}
+            handlePageChange={this.handlePageChange} />
         }
 
         <Snackbar
