@@ -19,6 +19,7 @@ const theme = createMuiTheme({
     tonalOffset: 0.2,
   },
 });
+
 class App extends Component {
   render() {
     return (
