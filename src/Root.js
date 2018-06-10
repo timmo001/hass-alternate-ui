@@ -60,10 +60,6 @@ class Root extends Component {
               return entity[0] === this.props.match.params.entity_id
             });
 
-            console.log('props:', this.props);
-            console.log('entity_id:', this.props.match.params.entity_id);
-            console.log('page:', page);
-
             // Pages
             const pages = allEntities.filter(entity => {
               return entity[0].startsWith('group.') && entity[1].attributes.view && entity[0] !== 'group.default_view'
