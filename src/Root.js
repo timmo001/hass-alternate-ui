@@ -16,6 +16,7 @@ const styles = theme => ({
     flexGrow: 1,
     height: '100%',
     margin: theme.spacing.unit,
+    backgroundColor: theme.background,
   },
   flex: {
     flex: 1,
@@ -54,11 +55,13 @@ class Root extends Component {
           conn.addEventListener('ready', this.eventHandler);
 
           subscribeEntities(conn, entities => {
-            console.log('New entities!', entities);
-            this.setState({ entities: Object.entries(entities) });
+            // console.log('New entities!', entities);
+            const entitiesArr = Object.entries(entities);
+            const page = entitiesArr.find(entity => entity[0] === 'group.default_view');
+            this.setState({ entities: entitiesArr, page });
           });
           subscribeConfig(conn, config => {
-            console.log('New config!', config);
+            // console.log('New config!', config);
             this.setState({ config });
           });
         }, err => {
@@ -75,9 +78,13 @@ class Root extends Component {
     this.setState({ snackMessage: { open: false, text: '' } });
   };
 
+  handlePageChange = (page) => {
+    this.setState({ page });
+  };
+
   render() {
     const { classes } = this.props;
-    const { /*title,*/ entities, snackMessage } = this.state;
+    const { /*title,*/ entities, page, snackMessage } = this.state;
 
     return (
       <div className={classes.root}>
@@ -91,8 +98,13 @@ class Root extends Component {
 
         {entities ?
           <div>
-            <Main entities={entities} />
-            <Navigation entities={entities} />
+            <Main
+              entities={entities}
+              page={page} />
+            <Navigation
+              entities={entities}
+              page={page}
+              handlePageChange={this.handlePageChange} />
           </div>
           : !localStorage.getItem('host') ?
             <Login login={this.connectToHASS} />

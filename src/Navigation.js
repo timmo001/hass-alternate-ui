@@ -20,21 +20,21 @@ class Navigation extends React.Component {
 
   handleChange = (event, value) => {
     this.setState({ value });
+    this.props.handlePageChange(value);
   };
 
   render() {
-    const { classes, entities } = this.props;
-    const { value } = this.state;
+    const { classes, entities, page } = this.props;
 
     return (
       <BottomNavigation
-        value={value}
+        value={page}
         onChange={this.handleChange}
         showLabels
         className={classes.navigation}>
 
         <BottomNavigationAction
-          value={'group.default_view'}
+          value={entities.find(entity => entity[0] === 'group.default_view')}
           label={'Home'}
           icon={<HomeIcon />} />
 
@@ -44,7 +44,7 @@ class Navigation extends React.Component {
           return (
             <BottomNavigationAction
               key={entity[1].attributes.order}
-              value={entity[0]}
+              value={entity}
               label={entity[1].attributes.friendly_name}
               icon={<HomeIcon />} />
           )
@@ -58,6 +58,8 @@ class Navigation extends React.Component {
 Navigation.propTypes = {
   classes: PropTypes.object.isRequired,
   entities: PropTypes.array.isRequired,
+  page: PropTypes.array.isRequired,
+  handlePageChange: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Navigation);
