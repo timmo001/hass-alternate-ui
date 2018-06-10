@@ -28,10 +28,8 @@ class App extends Component {
         <Router>
           <div>
             <Switch>
-
               <Route exact path="/view/:entity_id" component={Root} />
               <Redirect from="/" to="/view/group.default_view" />
-              {/* <Redirect exact strict from="/view" to="/view/group.default_view" /> */}
             </Switch>
           </div>
         </Router>
