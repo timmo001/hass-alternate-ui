@@ -14,7 +14,6 @@ import Navigation from './Navigation';
 const styles = theme => ({
   root: {
     minHeight: '100%',
-    height: '100%',
     backgroundColor: theme.palette.background[200],
   },
   flex: {

@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
   card: {
-    backgroundColor: theme.palette.background[100],
+    backgroundColor: theme.palette.background[50],
   },
   item: {
     display: 'inline-flex',
