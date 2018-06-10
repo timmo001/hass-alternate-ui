@@ -18,15 +18,15 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Logo from './logo.svg';
 
 const styles = theme => ({
+  grid: {
+    height: '100%',
+  },
   media: {
     height: 240,
     backgroundSize: 'contain',
   },
   fill: {
     flexGrow: 1,
-  },
-  grid: {
-    height: '100%',
   },
   margin: {
     margin: theme.spacing.unit,
