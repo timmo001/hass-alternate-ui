@@ -30,7 +30,6 @@ const styles = theme => ({
 class StateCard extends React.Component {
   render() {
     const { classes, entity } = this.props;
-    console.log('entity:', entity);
 
     return (
       <Card className={classes.card}>

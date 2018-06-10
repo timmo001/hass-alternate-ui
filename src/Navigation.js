@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from "react-router-dom";
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -30,6 +31,7 @@ class Navigation extends React.Component {
 
   handleChange = (event, value) => {
     this.setState({ value });
+    this.props.history.push('/view/' + value[0]);
     this.props.handlePageChange(value);
   };
 
@@ -74,4 +76,4 @@ Navigation.propTypes = {
   handlePageChange: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(Navigation);
+export default withStyles(styles)(withRouter(Navigation));

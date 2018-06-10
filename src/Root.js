@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router-dom";
 import PropTypes from 'prop-types';
 import { createConnection, subscribeEntities, subscribeConfig } from 'home-assistant-js-websocket';
 import { withStyles } from '@material-ui/core/styles';
@@ -54,35 +55,23 @@ class Root extends Component {
 
           subscribeEntities(conn, entities => {
             // console.log('New entities!', entities);
-            const entitiesArr = Object.entries(entities);
-            const page = entitiesArr.find(entity => entity[0] === 'group.default_view');
+            const allEntities = Object.entries(entities);
+            const page = allEntities.find(entity => {
+              return entity[0] === this.props.match.params.entity_id
+            });
 
-            // Get groups and entites
-            const groups = entitiesArr.filter(thePage => {
-              return page[1].attributes.entity_id.indexOf(thePage[0]) > -1
-            });
-            // console.log('groups:', groups);
-            const entitiesItemsArr = [];
-            groups.map(group => {
-              const items = entitiesArr.filter(entity => {
-                return group[1].attributes.entity_id.indexOf(entity[0]) > -1
-              });
-              return entitiesItemsArr.push({
-                name: group[0],
-                friendly_name: group[1].attributes.friendly_name,
-                order: group[1].attributes.order,
-                items,
-              });
-            });
-            entitiesItemsArr.sort((a, b) => a.order > b.order);
-            // console.log('entitiesItemsArr:', entitiesItemsArr);
+            console.log('props:', this.props);
+            console.log('entity_id:', this.props.match.params.entity_id);
+            console.log('page:', page);
 
             // Pages
-            const pages = entitiesArr.filter(entity => {
+            const pages = allEntities.filter(entity => {
               return entity[0].startsWith('group.') && entity[1].attributes.view && entity[0] !== 'group.default_view'
-            })
+            });
 
-            this.setState({ entities: entitiesItemsArr, pages, page });
+            this.setState({ allEntities, pages, page });
+
+            this.getEntities();
           });
           subscribeConfig(conn, config => {
             // console.log('New config!', config);
@@ -97,13 +86,39 @@ class Root extends Component {
     }
   }
 
+  getEntities = () => {
+    // Get groups and entites
+    const groups = this.state.allEntities.filter(thePage => {
+      return this.state.page[1].attributes.entity_id.indexOf(thePage[0]) > -1
+    });
+    // console.log('groups:', groups);
+    const entitiesItemsArr = [];
+    groups.map(group => {
+      const items = this.state.allEntities.filter(entity => {
+        return group[1].attributes.entity_id.indexOf(entity[0]) > -1
+      });
+      return entitiesItemsArr.push({
+        name: group[0],
+        friendly_name: group[1].attributes.friendly_name,
+        order: group[1].attributes.order,
+        items,
+      });
+    });
+    entitiesItemsArr.sort((a, b) => a.order > b.order);
+    // console.log('entitiesItemsArr:', entitiesItemsArr);
+    this.setState({ entities: entitiesItemsArr });
+
+  };
+
   handleClose = (event, reason) => {
     // if (reason === 'clickaway') return;
     this.setState({ snackMessage: { open: false, text: '' } });
   };
 
   handlePageChange = (page) => {
-    this.setState({ page });
+    this.setState({ page }, () => {
+      this.getEntities(this.state.allEntities, page);
+    });
   };
 
   render() {
@@ -120,7 +135,7 @@ class Root extends Component {
           </Toolbar>
         </AppBar> */}
 
-        {entities ?
+        {entities && pages ?
           <Main
             entities={entities}
             page={page} />
@@ -130,7 +145,7 @@ class Root extends Component {
             <CircularProgress className={classes.progress} size={50} />
         }
 
-        {entities &&
+        {pages && page &&
           <Navigation
             pages={pages}
             page={page}
@@ -160,4 +175,4 @@ Root.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Root);
+export default withStyles(styles)(withRouter(Root));

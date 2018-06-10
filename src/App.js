@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Redirect, Switch } from "react-router-dom";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import lightBlue from '@material-ui/core/colors/lightBlue';
 import blueGrey from '@material-ui/core/colors/blueGrey';
@@ -24,7 +25,16 @@ class App extends Component {
   render() {
     return (
       <MuiThemeProvider theme={theme}>
-        <Root />
+        <Router>
+          <div>
+            <Switch>
+
+              <Route exact path="/view/:entity_id" component={Root} />
+              <Redirect from="/" to="/view/group.default_view" />
+              {/* <Redirect exact strict from="/view" to="/view/group.default_view" /> */}
+            </Switch>
+          </div>
+        </Router>
       </MuiThemeProvider>
     );
   }
