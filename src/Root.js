@@ -13,10 +13,8 @@ import Navigation from './Navigation';
 
 const styles = theme => ({
   root: {
-    flexGrow: 1,
-    height: '100%',
-    margin: theme.spacing.unit,
-    backgroundColor: theme.background,
+    minHeight: '100%',
+    backgroundColor: theme.palette.background[200],
   },
   flex: {
     flex: 1,

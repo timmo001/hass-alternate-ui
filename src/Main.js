@@ -6,7 +6,8 @@ import StateCard from './StateCard';
 
 const styles = theme => ({
   grid: {
-    marginBottom: 56,
+    padding: theme.spacing.unit * 2,
+    marginTop: 56,
   },
 });
 

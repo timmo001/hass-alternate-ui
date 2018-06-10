@@ -1,15 +1,25 @@
 import React from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import HomeIcon from '@material-ui/icons/Home';
 
 const styles = theme => ({
   navigation: {
     position: 'fixed',
     width: '100%',
-    bottom: 0,
+    top: 0,
+    backgroundColor: theme.palette.primary[500],
+  },
+  action: {
+    color: '#000000 !important',
+    // '&$selected': {
+    //   color: '#000000',
+    // },
+  },
+  icon: {
+    fontSize: 22,
   },
 });
 
@@ -34,19 +44,23 @@ class Navigation extends React.Component {
         className={classes.navigation}>
 
         <BottomNavigationAction
+          className={classes.action}
           value={entities.find(entity => entity[0] === 'group.default_view')}
           label={'Home'}
-          icon={<HomeIcon />} />
+          icon={<i className={classNames('mdi', 'mdi-home', classes.icon)} />} />
 
         {entities.filter(entity => {
           return entity[0].startsWith('group.') && entity[1].attributes.view && entity[0] !== 'group.default_view'
-        }).map(entity => {
+        }).map(page => {
           return (
             <BottomNavigationAction
-              key={entity[1].attributes.order}
-              value={entity}
-              label={entity[1].attributes.friendly_name}
-              icon={<HomeIcon />} />
+              key={page[1].attributes.order}
+              className={classes.action}
+              value={page}
+              label={page[1].attributes.friendly_name}
+              icon={page[1].attributes.icon &&
+                <i className={classNames('mdi', page[1].attributes.icon.replace(':', '-'), classes.icon)} />
+              } />
           )
         })
         }

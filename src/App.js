@@ -5,6 +5,7 @@ import blueGrey from '@material-ui/core/colors/blueGrey';
 import red from '@material-ui/core/colors/red';
 import grey from '@material-ui/core/colors/grey';
 import 'typeface-roboto';
+import '@mdi/font/css/materialdesignicons.min.css';
 import './App.css';
 import Root from './Root';
 
@@ -12,7 +13,7 @@ const theme = createMuiTheme({
   palette: {
     primary: lightBlue,
     secondary: blueGrey,
-    background: grey[800],
+    background: grey,
     error: red,
     contrastThreshold: 3,
     tonalOffset: 0.2,
