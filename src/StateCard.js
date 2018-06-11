@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
@@ -15,22 +15,31 @@ const styles = theme => ({
   item: {
     display: 'inline-flex',
     width: '100%',
-    padding: '10px 8px',
   },
   icon: {
     margin: '0 14px 0 0',
+    lineHeight: '32px',
+    paddingTop: 8,
   },
   label: {
+    lineHeight: '32px',
+    paddingTop: 8,
+  },
+  flexGrow: {
     flexGrow: 1,
-    lineHeight: '26px',
   },
 });
 
 class StateCard extends React.Component {
+  state = {
+    on: this.props.entity.state === 'on'
+  };
 
-  getDefaultIcon = entity => {
-    const domain = entity.substring(0, entity.indexOf('.'));
+  handleChange = name => event => {
+    this.setState({ [name]: event.target.checked });
+  };
 
+  getDefaultIcon = domain => {
     switch (domain) {
       case 'alarm_control_panel':
         return 'mdi-alarm-light';
@@ -80,24 +89,35 @@ class StateCard extends React.Component {
             Subheading
           </Typography> */}
           {entity.items.map(item => {
+            const domain = item[0].substring(0, item[0].indexOf('.'));
             return (
               <div key={item[0]} className={classes.item}>
                 <i className={classNames('mdi',
                   'mdi-24px',
                   item[1].attributes.icon ?
                     item[1].attributes.icon.replace(':', '-')
-                    : this.getDefaultIcon(item[0]),
+                    : this.getDefaultIcon(domain),
                   classes.icon)} />
                 <Typography className={classes.label} component="span">
                   {item[1].attributes.friendly_name}
                 </Typography>
+                <div className={classes.flexGrow} />
+                {domain === 'switch' | domain === 'light' ?
+                  <Switch
+                    checked={this.state.on}
+                    onChange={this.handleChange('on')}
+                    value="on" />
+                  : domain === 'scene' | domain === 'script' ?
+                    <Button color="secondary" onClick={this.handleActivate}>Activate</Button>
+                    :
+                    <Typography className={classes.label} component="span">
+                      {item[1].state}
+                    </Typography>
+                }
               </div>
             )
           })}
         </CardContent>
-        <CardActions>
-          <Button size="small">Learn More</Button>
-        </CardActions>
       </Card>
     );
   }
