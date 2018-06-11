@@ -22,7 +22,7 @@ const styles = theme => ({
   },
   label: {
     flexGrow: 1,
-    verticalAlign: 'middle',
+    lineHeight: '26px',
   },
 });
 
