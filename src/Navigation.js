@@ -52,7 +52,7 @@ class Navigation extends React.Component {
           label={'Home'}
           icon={<i className={classNames('mdi', 'mdi-home', classes.icon)} />} />
 
-        {pages.map((page, i) => {
+        {pages.filter(entity => entity[0] !== 'group.default_view').map((page, i) => {
           return (
             <BottomNavigationAction
               key={page[1].attributes.order}

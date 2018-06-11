@@ -64,7 +64,7 @@ class Root extends Component {
 
             // Pages
             const pages = allEntities.filter(entity => {
-              return entity[0].startsWith('group.') && entity[1].attributes.view && entity[0] !== 'group.default_view'
+              return entity[0].startsWith('group.') && entity[1].attributes.view
             });
 
             this.setState({ allEntities, pages, page });
