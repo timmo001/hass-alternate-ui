@@ -56,7 +56,6 @@ class Root extends Component {
           conn.addEventListener('ready', this.eventHandler);
 
           subscribeEntities(conn, entities => {
-            // console.log('New entities!', entities);
             const allEntities = Object.entries(entities);
             const page = allEntities.find(entity => {
               return entity[0] === this.props.match.params.entity_id
@@ -72,7 +71,6 @@ class Root extends Component {
             this.getEntities();
           });
           subscribeConfig(conn, config => {
-            // console.log('New config!', config);
             this.setState({ config });
           });
         }, err => {
