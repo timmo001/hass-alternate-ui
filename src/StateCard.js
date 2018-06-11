@@ -19,7 +19,6 @@ const styles = theme => ({
   },
   icon: {
     margin: '0 14px 0 0',
-    fontSize: 22,
   },
   label: {
     flexGrow: 1,
@@ -28,6 +27,46 @@ const styles = theme => ({
 });
 
 class StateCard extends React.Component {
+
+  getDefaultIcon = entity => {
+    const domain = entity.substring(0, entity.indexOf('.'));
+
+    switch (domain) {
+      case 'alarm_control_panel':
+        return 'mdi-alarm-light';
+      case 'binary_sensor':
+        return 'mdi-';
+      case 'camera':
+        return 'mdi-camera';
+      case 'device_tracker':
+        return 'mdi-tablet-cellphone';
+      case 'fan':
+        return 'mdi-air-conditioner';
+      case 'group':
+        return 'mdi-group';
+      case 'light':
+        return 'mdi-lightbulb';
+      case 'lock':
+        return 'mdi-lock';
+      case 'media-player':
+        return 'mdi-play-circle';
+      case 'switch':
+        return 'mdi-light-switch';
+      case 'sensor':
+        return 'mdi-access-point';
+      case 'sun':
+        return 'mdi-white-balance-sunny';
+      case 'input_number':
+        return 'mdi-ray-vertex';
+      case 'scene':
+        return 'mdi-image-filter-hdr';
+      case 'script':
+        return 'mdi-script';
+      default:
+        return 'mdi-help'
+    }
+  };
+
   render() {
     const { classes, entity } = this.props;
 
@@ -43,9 +82,12 @@ class StateCard extends React.Component {
           {entity.items.map(item => {
             return (
               <div key={item[0]} className={classes.item}>
-                {item[1].attributes.icon &&
-                  <i className={classNames('mdi', item[1].attributes.icon.replace(':', '-'), classes.icon)} />
-                }
+                <i className={classNames('mdi',
+                  'mdi-24px',
+                  item[1].attributes.icon ?
+                    item[1].attributes.icon.replace(':', '-')
+                    : this.getDefaultIcon(item[0]),
+                  classes.icon)} />
                 <Typography className={classes.label} component="span">
                   {item[1].attributes.friendly_name}
                 </Typography>
