@@ -23,7 +23,7 @@ class Navigation extends React.Component {
         spacing={16}>
         {entities && entities.map(entity => {
           return (
-            <Grid key={entity.order} item lg={3} md={4} sm={6} xs={12}>
+            <Grid key={entity.name} item lg={3} md={4} sm={6} xs={12}>
               <StateCard entity={entity} />
             </Grid>
           )
