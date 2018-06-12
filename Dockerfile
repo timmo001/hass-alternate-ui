@@ -15,7 +15,7 @@ RUN yarn run build --production
 RUN mkdir /usr/src/app
 
 # Copy files
-COPY build/ /usr/src/app
+COPY ./build/. /usr/src/app
 
 # Delete build files
 RUN rm -rf *
