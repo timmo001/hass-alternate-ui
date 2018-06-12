@@ -15,7 +15,7 @@ const styles = theme => ({
 class StateCard extends React.Component {
 
   render() {
-    const { classes, entity } = this.props;
+    const { classes, entity, handleChange } = this.props;
 
     return (
       <Card className={classes.card}>
@@ -28,7 +28,7 @@ class StateCard extends React.Component {
           </Typography> */}
           {entity.items.map(item => {
             return (
-              <StateEntity key={item[0]} entity={item} />
+              <StateEntity key={item[0]} entity={item} handleChange={handleChange} />
             )
           })}
         </CardContent>
@@ -40,6 +40,7 @@ class StateCard extends React.Component {
 StateCard.propTypes = {
   classes: PropTypes.object.isRequired,
   entity: PropTypes.object.isRequired,
+  handleChange: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(StateCard);
