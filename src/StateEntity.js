@@ -26,9 +26,6 @@ const styles = theme => ({
 });
 
 class StateEntity extends React.Component {
-  handleChange = name => event => {
-    // this.setState({ [name]: event.target.checked });
-  };
 
   getDefaultIcon = domain => {
     switch (domain) {
@@ -68,7 +65,7 @@ class StateEntity extends React.Component {
   };
 
   render() {
-    const { classes, entity } = this.props;
+    const { classes, entity, handleChange } = this.props;
     const domain = entity[0].substring(0, entity[0].indexOf('.'));
 
     return (
@@ -85,11 +82,13 @@ class StateEntity extends React.Component {
         <div className={classes.flexGrow} />
         {domain === 'switch' | domain === 'light' ?
           <Switch
+            value="on"
             checked={entity[1].state === 'on'}
-            onChange={this.handleChange('on')}
-            value="on" />
+            onChange={event => handleChange(domain, event.target.checked, { entity_id: entity[0] })} />
           : domain === 'scene' | domain === 'script' ?
-            <Button color="secondary" onClick={this.handleActivate}>Activate</Button>
+            <Button color="secondary" onClick={() => handleChange(domain, true, { entity_id: entity[0] })}>
+              Activate
+            </Button>
             :
             <Typography className={classes.label} component="span">
               {entity[1].state}
@@ -103,6 +102,7 @@ class StateEntity extends React.Component {
 StateEntity.propTypes = {
   classes: PropTypes.object.isRequired,
   entity: PropTypes.array.isRequired,
+  handleChange: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(StateEntity);

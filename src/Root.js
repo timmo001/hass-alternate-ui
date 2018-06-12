@@ -82,6 +82,21 @@ class Root extends Component {
     }
   }
 
+  handleChange = (domain, state, data = undefined) => {
+    createConnection(`ws://${localStorage.getItem('host')}/api/websocket`, { authToken: sessionStorage.password })
+      .then(conn => {
+        if (state)
+          conn.callService(domain, 'turn_on', data);
+        else
+          conn.callService(domain, 'turn_off', data);
+      }, err => {
+        console.error('Connection failed with code', err);
+        this.setState({ snackMessage: { open: true, text: 'Connection failed' }, entities: undefined });
+        localStorage.setItem('host', '');
+        sessionStorage.setItem('password', '');
+      });
+  };
+
   getEntities = () => {
     // Get groups and entites
     const groups = this.state.allEntities.filter(thePage => {
@@ -97,6 +112,7 @@ class Root extends Component {
         name: group[0],
         friendly_name: group[1].attributes.friendly_name,
         order: group[1].attributes.order,
+        state: group[1].state,
         items,
       });
     });
@@ -134,7 +150,8 @@ class Root extends Component {
         {entities && pages ?
           <Main
             entities={entities}
-            page={page} />
+            page={page}
+            handleChange={this.handleChange} />
           : !localStorage.getItem('host') ?
             <Login login={this.connectToHASS} />
             :
