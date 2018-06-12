@@ -26,7 +26,7 @@ const styles = theme => ({
 });
 
 class StateEntity extends React.Component {
- 
+
   getDefaultIcon = domain => {
     switch (domain) {
       case 'alarm_control_panel':
@@ -83,10 +83,12 @@ class StateEntity extends React.Component {
         {domain === 'switch' | domain === 'light' ?
           <Switch
             checked={entity[1].state === 'on'}
-            onChange={() => handleChange('on', !entity[1].state === 'on')}
+            onChange={() => handleChange(domain, !entity[1].state === 'on')}
             value="on" />
           : domain === 'scene' | domain === 'script' ?
-            <Button color="secondary" onClick={this.handleActivate}>Activate</Button>
+            <Button color="secondary" onClick={() => handleChange(domain, true)}>
+              Activate
+            </Button>
             :
             <Typography className={classes.label} component="span">
               {entity[1].state}
