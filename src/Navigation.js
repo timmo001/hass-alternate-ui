@@ -9,6 +9,7 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 const styles = theme => ({
   navigation: {
     position: 'fixed',
+    zIndex: 1000,
     width: '100%',
     top: 0,
     backgroundColor: theme.palette.primary[500],
