@@ -112,6 +112,7 @@ class Root extends Component {
         name: group[0],
         friendly_name: group[1].attributes.friendly_name,
         order: group[1].attributes.order,
+        state: group[1].state,
         items,
       });
     });
