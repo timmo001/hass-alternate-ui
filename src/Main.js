@@ -14,7 +14,7 @@ const styles = theme => ({
 class Navigation extends React.Component {
 
   render() {
-    const { classes, entities } = this.props;
+    const { classes, entities, handleChange } = this.props;
 
     return (
       <Grid
@@ -24,7 +24,7 @@ class Navigation extends React.Component {
         {entities && entities.map(entity => {
           return (
             <Grid key={entity.name} item lg={3} md={4} sm={6} xs={12}>
-              <StateCard entity={entity} />
+              <StateCard entity={entity} handleChange={handleChange} />
             </Grid>
           )
         })}
@@ -37,6 +37,7 @@ Navigation.propTypes = {
   classes: PropTypes.object.isRequired,
   entities: PropTypes.array.isRequired,
   page: PropTypes.array.isRequired,
+  handleChange: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Navigation);
