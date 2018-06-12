@@ -26,10 +26,7 @@ const styles = theme => ({
 });
 
 class StateEntity extends React.Component {
-  handleChange = name => event => {
-    // this.setState({ [name]: event.target.checked });
-  };
-
+ 
   getDefaultIcon = domain => {
     switch (domain) {
       case 'alarm_control_panel':
@@ -68,7 +65,7 @@ class StateEntity extends React.Component {
   };
 
   render() {
-    const { classes, entity } = this.props;
+    const { classes, entity, handleChange } = this.props;
     const domain = entity[0].substring(0, entity[0].indexOf('.'));
 
     return (
@@ -86,7 +83,7 @@ class StateEntity extends React.Component {
         {domain === 'switch' | domain === 'light' ?
           <Switch
             checked={entity[1].state === 'on'}
-            onChange={this.handleChange('on')}
+            onChange={() => handleChange('on', !entity[1].state === 'on')}
             value="on" />
           : domain === 'scene' | domain === 'script' ?
             <Button color="secondary" onClick={this.handleActivate}>Activate</Button>
@@ -103,6 +100,7 @@ class StateEntity extends React.Component {
 StateEntity.propTypes = {
   classes: PropTypes.object.isRequired,
   entity: PropTypes.array.isRequired,
+  handleChange: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(StateEntity);
