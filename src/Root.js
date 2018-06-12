@@ -88,7 +88,7 @@ class Root extends Component {
         if (state)
           conn.callService(domain, 'turn_on', data);
         else
-          conn.callService(domain, 'turn_off');
+          conn.callService(domain, 'turn_off', data);
       }, err => {
         console.error('Connection failed with code', err);
         this.setState({ snackMessage: { open: true, text: 'Connection failed' }, entities: undefined });

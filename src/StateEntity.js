@@ -82,11 +82,11 @@ class StateEntity extends React.Component {
         <div className={classes.flexGrow} />
         {domain === 'switch' | domain === 'light' ?
           <Switch
+            value="on"
             checked={entity[1].state === 'on'}
-            onChange={() => handleChange(domain, !entity[1].state === 'on')}
-            value="on" />
+            onChange={event => handleChange(domain, event.target.checked, { entity_id: entity[0] })} />
           : domain === 'scene' | domain === 'script' ?
-            <Button color="secondary" onClick={() => handleChange(domain, true)}>
+            <Button color="secondary" onClick={() => handleChange(domain, true, { entity_id: entity[0] })}>
               Activate
             </Button>
             :
