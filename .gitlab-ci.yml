@@ -16,9 +16,7 @@ variables:
 stages:
   - build
   - test
-  - dast
   - deploy
-  - performance
 
 # Generic DIND template
 .dind: &dind
@@ -91,29 +89,6 @@ license_management:
     variables:
       - $LICENSE_MANAGEMENT_DISABLED
 
-performance:
-  stage: performance
-  image: docker:stable
-  variables:
-    DOCKER_DRIVER: overlay2
-  allow_failure: true
-  services:
-    - docker:stable-dind
-  script:
-    - setup_docker
-    - performance
-  artifacts:
-    paths:
-    - performance.json
-    - sitespeed-results/
-  only:
-    refs:
-      - branches
-    # kubernetes: active
-  except:
-    variables:
-      - $PERFORMANCE_DISABLED
-
 dependency_scanning:
   stage: test
   image: docker:stable
@@ -147,26 +122,6 @@ container_scanning:
   except:
     variables:
       - $CONTAINER_SCANNING_DISABLED
-
-dast:
-  stage: dast
-  allow_failure: true
-  image: registry.gitlab.com/gitlab-org/security-products/zaproxy
-  variables:
-    POSTGRES_DB: "false"
-  script:
-    - dast
-  artifacts:
-    paths: [gl-dast-report.json]
-  only:
-    refs:
-      - branches
-    # kubernetes: active
-  except:
-    refs:
-      - master
-    variables:
-      - $DAST_DISABLED
 
 deploy: &deploy
   <<: *dind
