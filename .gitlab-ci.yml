@@ -21,6 +21,14 @@ stages:
   - deploy
   - performance
 
+# Generic DIND template
+.dind: &dind
+  before_script:
+    - docker info
+  services:
+    - name: docker:dind
+      command: ["--experimental"]
+
 build:
   stage: build
   image: docker:stable-git
