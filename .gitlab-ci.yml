@@ -9,10 +9,9 @@
 image: alpine:latest
 
 variables:
-  ADDON_GITHUB_REPO: timmo001/hass-alternate-ui
   IMAGE_SLUG: hass-alternate-ui
   DOCKER_DRIVER: overlay2
-  DOCKER_HUB_ORG: hassioaddons
+  DOCKER_HUB_USER: timmo001
 
 stages:
   - build
@@ -196,29 +195,31 @@ dast:
     - |
       docker tag \
         "registry.gitlab.com/${CI_PROJECT_PATH}:${CI_COMMIT_SHA}" \
-        "${DOCKER_HUB_ORG}/${IMAGE_SLUG}:${TAG}"
+        "${DOCKER_HUB_USER}/${IMAGE_SLUG}:${TAG}"
     - |
       docker push \
-        "${DOCKER_HUB_ORG}/${IMAGE_SLUG}:${TAG}"
+        "${DOCKER_HUB_USER}/${IMAGE_SLUG}:${TAG}"
     - |
       docker tag \
         "registry.gitlab.com/${CI_PROJECT_PATH}:${CI_COMMIT_SHA}" \
-        "${DOCKER_HUB_ORG}/${IMAGE_SLUG}:${TAG}"
+        "${DOCKER_HUB_USER}/${IMAGE_SLUG}:${TAG}"
     - |
       docker push \
-        "${DOCKER_HUB_ORG}/${IMAGE_SLUG}:${TAG}"
+        "${DOCKER_HUB_USER}/${IMAGE_SLUG}:${TAG}"
   tags:
     - deploy
   only:
-    - master
     - /^v\d+\.\d+\.\d+(?:-(?:beta|rc)(?:(?:(?:\+|\.)?[a-zA-Z0-9]+)*)?)?$/
   except:
     - /^(?!master).+@/
 
 deploy:staging:
   <<: *deploy
-  # variables:
-  #   ADDON_ARCH: amd64
+
+deploy:master:
+  <<: *deploy
+  only:
+    - master
 
   # stage: deploy
   # script:
