@@ -3,28 +3,23 @@
 # * building a Docker image (using a buildpack if necessary),
 # * storing the image in the container registry,
 # * running tests from a buildpack,
-# * running code quality analysis,
-# * creating a review app for each topic branch,
+# * creating a staging app for each topic branch,
 # * and continuous deployment to production
 
 image: alpine:latest
 
 variables:
-  # POSTGRES_USER: user
-  # POSTGRES_PASSWORD: testing-password
-  # POSTGRES_ENABLED: "true"
-  # POSTGRES_DB: $CI_ENVIRONMENT_SLUG
+  ADDON_GITHUB_REPO: timmo001/hass-alternate-ui
+  IMAGE_SLUG: hass-alternate-ui
+  DOCKER_DRIVER: overlay2
+  DOCKER_HUB_ORG: hassioaddons
 
 stages:
   - build
   - test
-  - review
   - dast
-  - staging
-  - canary
-  - production
+  - deploy
   - performance
-  - cleanup
 
 build:
   stage: build
@@ -159,12 +154,76 @@ dast:
   only:
     refs:
       - branches
-    kubernetes: active
+    # kubernetes: active
   except:
     refs:
       - master
     variables:
       - $DAST_DISABLED
+
+# Generic deploy template
+.deploy: &deploy
+  <<: *dind
+  stage: deploy
+  before_script:
+    - docker info
+    - docker pull "registry.gitlab.com/${CI_PROJECT_PATH}/:${CI_COMMIT_SHA}"
+    - |
+      echo "${CI_JOB_TOKEN}" | docker login \
+        --username gitlab-ci-token \
+        --password-stdin \
+        registry.gitlab.com
+    - |
+      echo "${DOCKER_PASSWORD}" | docker login \
+        --username "${DOCKER_LOGIN}" \
+        --password-stdin
+  script:
+    - |
+      docker tag \
+        "registry.gitlab.com/${CI_PROJECT_PATH}:${CI_COMMIT_SHA}" \
+        "registry.gitlab.com/${CI_PROJECT_PATH}:cache"
+    - docker push "registry.gitlab.com/${CI_PROJECT_PATH}:cache"
+    - TAG="${CI_COMMIT_TAG#v}"
+    - TAG="${TAG:-${CI_COMMIT_SHA:0:7}}"
+    - |
+      docker tag \
+        "registry.gitlab.com/${CI_PROJECT_PATH}:${CI_COMMIT_SHA}" \
+        "${DOCKER_HUB_ORG}/${IMAGE_SLUG}:${TAG}"
+    - |
+      docker push \
+        "${DOCKER_HUB_ORG}/${IMAGE_SLUG}:${TAG}"
+    - |
+      docker tag \
+        "registry.gitlab.com/${CI_PROJECT_PATH}:${CI_COMMIT_SHA}" \
+        "${DOCKER_HUB_ORG}/${IMAGE_SLUG}:${TAG}"
+    - |
+      docker push \
+        "${DOCKER_HUB_ORG}/${IMAGE_SLUG}:${TAG}"
+  tags:
+    - deploy
+  only:
+    - master
+    - /^v\d+\.\d+\.\d+(?:-(?:beta|rc)(?:(?:(?:\+|\.)?[a-zA-Z0-9]+)*)?)?$/
+  except:
+    - /^(?!master).+@/
+
+deploy:staging:
+  <<: *deploy
+  # variables:
+  #   ADDON_ARCH: amd64
+
+  # stage: deploy
+  # script:
+  #   - setup_docker
+  #   - deploy_staging
+  # environment:
+  #   name: staging
+  #   url: http://$CI_PROJECT_PATH_SLUG-staging.$AUTO_DEVOPS_DOMAIN
+  # only:
+  #   refs:
+  #     - master
+  #   variables:
+  #     - $STAGING_DISABLED
 
 # ---------------------------------------------------------------------------
 
