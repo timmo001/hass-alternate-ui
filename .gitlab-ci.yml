@@ -168,8 +168,7 @@ dast:
     variables:
       - $DAST_DISABLED
 
-# Generic deploy template
-.deploy: &deploy
+deploy: &deploy
   <<: *dind
   stage: deploy
   before_script:
@@ -209,17 +208,18 @@ dast:
   tags:
     - deploy
   only:
+    - master
     - /^v\d+\.\d+\.\d+(?:-(?:beta|rc)(?:(?:(?:\+|\.)?[a-zA-Z0-9]+)*)?)?$/
   except:
     - /^(?!master).+@/
 
-deploy:staging:
-  <<: *deploy
+# deploy:staging:
+#   <<: *deploy
 
-deploy:master:
-  <<: *deploy
-  only:
-    - master
+# deploy:master:
+#   <<: *deploy
+#   only:
+#     - master
 
   # stage: deploy
   # script:
