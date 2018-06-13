@@ -164,9 +164,9 @@ deploy: &deploy
   tags:
     - deploy
   only:
-    - master
-    - /^v\d+\.\d+\.\d+(?:(?:(?:\+|\.)?[a-zA-Z0-9]+)*)?$/
-    # - /^v\d+\.\d+\.\d+(?:-(?:beta|rc)(?:(?:(?:\+|\.)?[a-zA-Z0-9]+)*)?)?$/
+    - tags
+    - triggers
+    - schedules
   except:
     - /^(?!master).+@/
 
