@@ -129,7 +129,7 @@ deploy: &deploy
   image: docker:latest
   before_script:
     - docker info
-    - docker pull "registry.gitlab.com/${CI_PROJECT_PATH}/:${CI_COMMIT_SHA}"
+    - docker pull "registry.gitlab.com/${CI_PROJECT_PATH_SLUG}:${CI_COMMIT_SHA}"
     - |
       echo "${CI_JOB_TOKEN}" | docker login \
         --username gitlab-ci-token \
@@ -142,21 +142,21 @@ deploy: &deploy
   script:
     - |
       docker tag \
-        "registry.gitlab.com/${CI_PROJECT_PATH}:${CI_COMMIT_SHA}" \
-        "registry.gitlab.com/${CI_PROJECT_PATH}:cache"
-    - docker push "registry.gitlab.com/${CI_PROJECT_PATH}:cache"
+        "registry.gitlab.com/${CI_PROJECT_PATH_SLUG}:${CI_COMMIT_SHA}" \
+        "registry.gitlab.com/${CI_PROJECT_PATH_SLUG}:cache"
+    - docker push "registry.gitlab.com/${CI_PROJECT_PATH_SLUG}:cache"
     - TAG="${CI_COMMIT_TAG#v}"
     - TAG="${TAG:-${CI_COMMIT_SHA:0:7}}"
     - |
       docker tag \
-        "registry.gitlab.com/${CI_PROJECT_PATH}:${CI_COMMIT_SHA}" \
+        "registry.gitlab.com/${CI_PROJECT_PATH_SLUG}:${CI_COMMIT_SHA}" \
         "${DOCKER_HUB_USER}/${IMAGE_SLUG}:${TAG}"
     - |
       docker push \
         "${DOCKER_HUB_USER}/${IMAGE_SLUG}:${TAG}"
     - |
       docker tag \
-        "registry.gitlab.com/${CI_PROJECT_PATH}:${CI_COMMIT_SHA}" \
+        "registry.gitlab.com/${CI_PROJECT_PATH_SLUG}:${CI_COMMIT_SHA}" \
         "${DOCKER_HUB_USER}/${IMAGE_SLUG}:${TAG}"
     - |
       docker push \
@@ -168,27 +168,6 @@ deploy: &deploy
     - /^v\d+\.\d+\.\d+(?:-(?:beta|rc)(?:(?:(?:\+|\.)?[a-zA-Z0-9]+)*)?)?$/
   except:
     - /^(?!master).+@/
-
-# deploy:staging:
-#   <<: *deploy
-
-# deploy:master:
-#   <<: *deploy
-#   only:
-#     - master
-
-  # stage: deploy
-  # script:
-  #   - setup_docker
-  #   - deploy_staging
-  # environment:
-  #   name: staging
-  #   url: http://$CI_PROJECT_PATH_SLUG-staging.$AUTO_DEVOPS_DOMAIN
-  # only:
-  #   refs:
-  #     - master
-  #   variables:
-  #     - $STAGING_DISABLED
 
 # ---------------------------------------------------------------------------
 
