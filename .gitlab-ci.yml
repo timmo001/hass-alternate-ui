@@ -129,7 +129,7 @@ deploy: &deploy
   image: docker:latest
   before_script:
     - docker info
-    - docker pull "registry.gitlab.com/${CI_PROJECT_PATH}:${CI_COMMIT_SHA}"
+    - docker pull "registry.gitlab.com/${CI_PROJECT_PATH}/master:${CI_COMMIT_SHA}"
     - |
       echo "${CI_JOB_TOKEN}" | docker login \
         --username gitlab-ci-token \
