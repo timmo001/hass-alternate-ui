@@ -21,6 +21,11 @@ const styles = theme => ({
     lineHeight: '32px',
     paddingTop: 8,
   },
+  state: {
+    lineHeight: '32px',
+    paddingTop: 8,
+    paddingRight: 16,
+  },
   flexGrow: {
     flexGrow: 1,
   },
@@ -91,7 +96,7 @@ class StateEntity extends React.Component {
               Activate
             </Button>
             :
-            <Typography className={classes.label} component="span">
+            <Typography className={classes.state} component="span">
               {entity[1].state}
             </Typography>
         }
