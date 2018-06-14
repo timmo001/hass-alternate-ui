@@ -35,7 +35,7 @@ class StateCard extends React.Component {
             <Typography className={classes.label} variant="headline" component="h2">
               {entity.friendly_name}
             </Typography>
-            {entity.state !== 'unknown' &&
+            {entity.state !== 'unknown' && entity.items.length > 1 &&
               <Switch
                 value="on"
                 checked={entity.state === 'on'}
