@@ -45,7 +45,7 @@ const styles = theme => ({
     marginTop: 8,
   },
   attributeState: {
-    width: 72,
+    width: 82,
     marginTop: 18,
     marginLeft: 16,
     marginRight: 16,
@@ -122,6 +122,9 @@ class StateEntity extends React.Component {
     const { entity } = this.state;
     const domain = entity[0].substring(0, entity[0].indexOf('.'));
 
+    if (entity[1].attributes.color_temp)
+      console.log(entity[1].attributes);
+
     return (
       <div>
         <div className={classes.entity}>
@@ -158,7 +161,7 @@ class StateEntity extends React.Component {
                 <div className={classes.container}>
                   <Typography id="brightness">Brightness</Typography>
                   <Slider
-                    value={entity[1].attributes.brightness}
+                    value={Math.round(entity[1].attributes.brightness)}
                     min={1}
                     max={255}
                     step={1}
@@ -166,7 +169,7 @@ class StateEntity extends React.Component {
                     onChange={(event, value) => {
                       this.handleChange(domain, true, {
                         entity_id: entity[0],
-                        brightness: value
+                        brightness: Math.round(value)
                       }, 200);
                     }} />
                 </div>
@@ -174,14 +177,50 @@ class StateEntity extends React.Component {
                   id="brightness"
                   type="number"
                   inputProps={{
+                    step: 1,
                     max: 255,
                   }}
                   className={classes.attributeState}
-                  value={entity[1].attributes.brightness}
+                  value={Math.round(entity[1].attributes.brightness)}
                   onChange={event => {
                     this.handleChange(domain, true, {
                       entity_id: entity[0],
                       brightness: Number(event.target.value)
+                    }, 500)
+                  }} />
+              </div>
+            }
+            {entity[1].attributes.color_temp &&
+              <div className={classes.attributes}>
+                <i className={classNames('mdi', 'mdi-24px', 'mdi-thermometer', classes.attributeIcon)} />
+                <div className={classes.container}>
+                  <Typography id="color_temp">Color Temperature</Typography>
+                  <Slider
+                    value={Math.round(entity[1].attributes.color_temp)}
+                    min={entity[1].attributes.min_mireds}
+                    max={entity[1].attributes.max_mireds}
+                    step={1}
+                    aria-labelledby="color_temp"
+                    onChange={(event, value) => {
+                      this.handleChange(domain, true, {
+                        entity_id: entity[0],
+                        color_temp: Math.round(value)
+                      }, 200);
+                    }} />
+                </div>
+                <TextField
+                  id="color_temp"
+                  type="number"
+                  inputProps={{
+                    step: 1,
+                    // max: 255,
+                  }}
+                  className={classes.attributeState}
+                  value={Math.round(entity[1].attributes.color_temp)}
+                  onChange={event => {
+                    this.handleChange(domain, true, {
+                      entity_id: entity[0],
+                      color_temp: Number(event.target.value)
                     }, 500)
                   }} />
               </div>
