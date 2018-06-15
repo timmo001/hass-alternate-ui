@@ -32,8 +32,8 @@ const styles = theme => ({
   },
   state: {
     lineHeight: '32px',
-    paddingTop: 8,
-    paddingRight: 16,
+    marginTop: 8,
+    marginRight: 16,
   },
   flexGrow: {
     flexGrow: 1,
