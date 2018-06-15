@@ -45,7 +45,7 @@ class StateCard extends React.Component {
           {/* <Typography className={classes.pos} color="textSecondary">
             Subheading
           </Typography> */}
-          {entity.items.map(item => {
+          {entity.items.sort((a, b) => a[1].attributes.friendly_name > b[1].attributes.friendly_name).map(item => {
             return (
               <StateEntity key={item[0]} entity={item} handleChange={handleChange} />
             )

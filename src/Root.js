@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import PropTypes from 'prop-types';
-import { createConnection, subscribeEntities, subscribeConfig } from 'home-assistant-js-websocket';
+import { createConnection, subscribeEntities } from 'home-assistant-js-websocket';
 import { withStyles } from '@material-ui/core/styles';
 // import AppBar from '@material-ui/core/AppBar';
 // import Toolbar from '@material-ui/core/Toolbar';
@@ -31,7 +31,6 @@ const styles = theme => ({
 
 class Root extends Component {
   state = {
-    // title: 'Home Assistant Alternate UI'
     snackMessage: { open: false, text: '' },
   };
 
@@ -49,30 +48,11 @@ class Root extends Component {
 
   connectToHASS = () => {
     if (localStorage.getItem('host')) {
-      console.log('Connecting to HASS..');
       createConnection(`ws://${localStorage.getItem('host')}/api/websocket`, { authToken: sessionStorage.password })
         .then(conn => {
-          console.log('Connection established!');
+          conn.removeEventListener('ready', this.eventHandler);
           conn.addEventListener('ready', this.eventHandler);
-
-          subscribeEntities(conn, entities => {
-            const allEntities = Object.entries(entities);
-            const page = allEntities.find(entity => {
-              return entity[0] === this.props.match.params.entity_id
-            });
-
-            // Pages
-            const pages = allEntities.filter(entity => {
-              return entity[0].startsWith('group.') && entity[1].attributes.view
-            });
-
-            this.setState({ allEntities, pages, page });
-
-            this.getEntities();
-          });
-          subscribeConfig(conn, config => {
-            this.setState({ config });
-          });
+          subscribeEntities(conn, this.updateEntities);
         }, err => {
           console.error('Connection failed with code', err);
           this.setState({ snackMessage: { open: true, text: 'Connection failed' }, entities: undefined });
@@ -85,16 +65,30 @@ class Root extends Component {
   handleChange = (domain, state, data = undefined) => {
     createConnection(`ws://${localStorage.getItem('host')}/api/websocket`, { authToken: sessionStorage.password })
       .then(conn => {
-        if (state)
-          conn.callService(domain, 'turn_on', data);
-        else
-          conn.callService(domain, 'turn_off', data);
+        conn.callService(domain, state ? 'turn_on' : 'turn_off', data).then(v => {
+          this.setState({ snackMessage: { open: true, text: 'Changed.' } });
+          setTimeout(() => this.connectToHASS(), 2000);
+        });
       }, err => {
         console.error('Connection failed with code', err);
         this.setState({ snackMessage: { open: true, text: 'Connection failed' }, entities: undefined });
         localStorage.setItem('host', '');
         sessionStorage.setItem('password', '');
       });
+  };
+
+  updateEntities = entities => {
+    const allEntities = Object.entries(entities);
+    const page = allEntities.find(entity => {
+      return entity[0] === this.props.match.params.entity_id
+    });
+
+    // Pages
+    const pages = allEntities.filter(entity => {
+      return entity[0].startsWith('group.') && entity[1].attributes.view
+    });
+
+    this.setState({ allEntities, pages, page }, () => this.getEntities());
   };
 
   getEntities = () => {
@@ -119,7 +113,6 @@ class Root extends Component {
     entitiesItemsArr.sort((a, b) => a.order > b.order);
     // console.log('entitiesItemsArr:', entitiesItemsArr);
     this.setState({ entities: entitiesItemsArr });
-
   };
 
   handleClose = (event, reason) => {
