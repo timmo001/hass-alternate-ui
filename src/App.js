@@ -10,21 +10,40 @@ import '@mdi/font/css/materialdesignicons.min.css';
 import './App.css';
 import Root from './Root';
 
-const theme = createMuiTheme({
-  palette: {
-    primary: lightBlue,
-    secondary: blueGrey,
-    background: grey,
-    error: red,
-    contrastThreshold: 3,
-    tonalOffset: 0.2,
+const themes = [
+  {
+    name: 'Light',
+    theme: createMuiTheme({
+      palette: {
+        primary: lightBlue,
+        secondary: blueGrey,
+        mainBackground: grey[100],
+        error: red,
+        contrastThreshold: 3,
+        tonalOffset: 0.2,
+      },
+    })
   },
-});
+  {
+    name: 'Dark',
+    theme: createMuiTheme({
+      palette: {
+        type: 'dark',
+        primary: lightBlue,
+        secondary: blueGrey,
+        mainBackground: grey[900],
+        error: red,
+        contrastThreshold: 3,
+        tonalOffset: 0.2,
+      },
+    })
+  },
+];
 
 class App extends Component {
   render() {
     return (
-      <MuiThemeProvider theme={theme}>
+      <MuiThemeProvider theme={themes[1].theme}>
         <Router>
           <div>
             <Switch>

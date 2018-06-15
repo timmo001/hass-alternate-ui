@@ -17,7 +17,8 @@ const styles = theme => ({
     position: 'absolute',
     paddingBottom: 8,
     minHeight: '100%',
-    backgroundColor: theme.palette.background[200],
+    minWidth: '100%',
+    backgroundColor: theme.palette.mainBackground,
   },
   flex: {
     flex: 1,
