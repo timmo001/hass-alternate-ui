@@ -17,7 +17,8 @@ const styles = theme => ({
     position: 'absolute',
     paddingBottom: 8,
     minHeight: '100%',
-    backgroundColor: theme.palette.background[200],
+    minWidth: '100%',
+    backgroundColor: theme.palette.mainBackground,
   },
   flex: {
     flex: 1,
@@ -66,9 +67,7 @@ class Root extends Component {
               return entity[0].startsWith('group.') && entity[1].attributes.view
             });
 
-            this.setState({ allEntities, pages, page });
-
-            this.getEntities();
+            this.setState({ allEntities, pages, page }, () => this.getEntities());
           });
           subscribeConfig(conn, config => {
             this.setState({ config });
@@ -120,6 +119,26 @@ class Root extends Component {
     // console.log('entitiesItemsArr:', entitiesItemsArr);
     this.setState({ entities: entitiesItemsArr });
 
+    this.setTheme();
+  };
+
+  setTheme = (themeId = undefined) => {
+    if (!themeId && themeId !== 0)
+      themeId = Number(localStorage.getItem('theme'));
+    if (!themeId && themeId !== 0)
+      themeId = -1;
+    if (themeId === -1) {
+      // theme from sunlight
+      const sun = this.state.allEntities.find(entity => {
+        return entity[0] === 'sun.sun'
+      });
+      if (sun)
+        this.props.setTheme(sun[1].state === 'below_horizon' ? 1 : 0);
+      else
+        this.props.setTheme(0);
+    } else
+      this.props.setTheme(themeId);
+    localStorage.setItem('theme', themeId);
   };
 
   handleClose = (event, reason) => {
@@ -162,6 +181,8 @@ class Root extends Component {
           <Navigation
             pages={pages}
             page={page}
+            theme={Number(localStorage.getItem('theme'))}
+            setTheme={this.setTheme}
             handlePageChange={this.handlePageChange} />
         }
 

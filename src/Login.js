@@ -43,7 +43,7 @@ const styles = theme => ({
   },
 });
 
-class Navigation extends React.Component {
+class Login extends React.Component {
   state = {
     host: '',
     password: '',
@@ -136,10 +136,9 @@ class Navigation extends React.Component {
   }
 }
 
-Navigation.propTypes = {
+Login.propTypes = {
   classes: PropTypes.object.isRequired,
-  entities: PropTypes.array.isRequired,
   login: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(Navigation);
+export default withStyles(styles)(Login);
