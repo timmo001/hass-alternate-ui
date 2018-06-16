@@ -12,6 +12,7 @@ const styles = theme => ({
     width: '100%',
   },
   icon: {
+    color: theme.palette.defaultText,
     margin: '0 14px 0 0',
     lineHeight: '32px',
     paddingTop: 8,

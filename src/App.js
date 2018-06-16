@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from "react-router-dom";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import lightBlue from '@material-ui/core/colors/lightBlue';
+import blue from '@material-ui/core/colors/blue';
 import blueGrey from '@material-ui/core/colors/blueGrey';
 import red from '@material-ui/core/colors/red';
 import grey from '@material-ui/core/colors/grey';
@@ -18,6 +19,7 @@ const themes = [
         primary: lightBlue,
         secondary: blueGrey,
         mainBackground: grey[100],
+        defaultText: grey[900],
         error: red,
         contrastThreshold: 3,
         tonalOffset: 0.2,
@@ -29,9 +31,10 @@ const themes = [
     theme: createMuiTheme({
       palette: {
         type: 'dark',
-        primary: lightBlue,
+        primary: blueGrey,
         secondary: blueGrey,
         mainBackground: grey[900],
+        defaultText: grey[100],
         error: red,
         contrastThreshold: 3,
         tonalOffset: 0.2,

@@ -15,10 +15,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary[500],
   },
   action: {
-    color: '#000000 !important',
-    // '&$selected': {
-    //   color: '#000000',
-    // },
+    color: theme.palette.defaultText + ' !important',
   },
   icon: {
     fontSize: 22,
