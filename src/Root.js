@@ -67,6 +67,12 @@ class Root extends Component {
               return entity[0].startsWith('group.') && entity[1].attributes.view
             });
 
+            // theme from sunlight
+            const sun = allEntities.find(entity => {
+              return entity[0] === 'sun.sun'
+            });
+            this.props.setTheme(sun[1].state === 'below_horizon' ? 1 : 0);
+
             this.setState({ allEntities, pages, page });
 
             this.getEntities();
