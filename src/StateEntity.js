@@ -112,16 +112,21 @@ class StateEntity extends React.Component {
     }
   };
 
-  handleChange = (domain, state, data = undefined, delay = 0) => {
-    const entity = this.state.entity;
-    entity[1].state = state ? 'on' : 'off';
-    if (data.brightness) entity[1].attributes.brightness = data.brightness;
-    this.setState({ entity }, () => {
-      clearTimeout(timeoutVar);
-      timeoutVar = setTimeout(() => {
-        this.props.handleChange(domain, state, data);
-      }, delay);
-    });
+  handleChange = (domain, state, data, delay = 0) => {
+    const ms = this.state.showAttributes && !Object.entries(data).length < 2 ? 200 : 0;
+    this.setState({ showAttributes: false });
+    setTimeout(() => {
+      const entity = this.state.entity;
+      entity[1].state = state ? 'on' : 'off';
+      if (data.brightness) entity[1].attributes.brightness = data.brightness;
+      this.setState({ entity }, () => {
+        clearTimeout(timeoutVar);
+        timeoutVar = setTimeout(() => {
+          this.props.handleChange(domain, state, data);
+        }, delay);
+      });
+    }, ms);
+
   };
 
   handleClick = () => this.setState({ showAttributes: !this.state.showAttributes });
