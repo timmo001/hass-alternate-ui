@@ -14,18 +14,21 @@ import Select from '@material-ui/core/Select';
 const styles = theme => ({
   appbar: {
     backgroundColor: theme.palette.primary[500],
+    height: 58,
   },
   action: {
+    minHeight: 58,
     color: theme.palette.defaultText + ' !important',
   },
   icon: {
     fontSize: 22,
   },
   navigation: {
+    height: 58,
     [theme.breakpoints.up('lg')]: {
-      marginLeft: 154,
+      marginLeft: 142,
     },
-    marginRight: 154,
+    marginRight: 142,
   },
   navigationRight: {
     top: 4,
@@ -35,7 +38,7 @@ const styles = theme => ({
     flexWrap: 'wrap',
   },
   formControl: {
-    margin: theme.spacing.unit,
+    // margin: theme.spacing.unit,
     minWidth: 120,
   },
   selectEmpty: {
