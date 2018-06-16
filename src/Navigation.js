@@ -13,7 +13,6 @@ import Select from '@material-ui/core/Select';
 
 const styles = theme => ({
   appbar: {
-    // backgroundColor: theme.palette.background.paper,
     backgroundColor: theme.palette.primary[500],
   },
   action: {
@@ -23,11 +22,14 @@ const styles = theme => ({
     fontSize: 22,
   },
   navigation: {
-    margin: '0 auto',
+    [theme.breakpoints.up('lg')]: {
+      marginLeft: 154,
+    },
+    marginRight: 154,
   },
   navigationRight: {
     top: 4,
-    right: 18,
+    right: 14,
     position: 'fixed',
     display: 'inline-flex',
     flexWrap: 'wrap',
@@ -57,13 +59,13 @@ class Navigation extends React.Component {
 
     return (
       <AppBar className={classes.appbar} position="fixed" color="default">
-        <div className={classes.navigationLeft} />
         <Tabs
           className={classes.navigation}
           value={page}
           onChange={this.handleChange}
+          fullWidth
           scrollable
-          scrollButtons="on"
+          scrollButtons="auto"
           indicatorColor="secondary"
           textColor="primary">
 
