@@ -7,6 +7,7 @@ import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/lab/Slider';
 import TextField from '@material-ui/core/TextField';
+import Collapse from '@material-ui/core/Collapse';
 
 var timeoutVar;
 
@@ -14,6 +15,11 @@ const styles = theme => ({
   entity: {
     display: 'inline-flex',
     width: '100%',
+  },
+  clickableArea: {
+    display: 'inline-flex',
+    flexGrow: 1,
+    cursor: 'pointer',
   },
   icon: {
     color: theme.palette.defaultText,
@@ -118,24 +124,28 @@ class StateEntity extends React.Component {
     });
   };
 
+  handleClick = () => this.setState({ showAttributes: !this.state.showAttributes });
+
   render() {
     const { classes } = this.props;
-    const { entity } = this.state;
+    const { entity, showAttributes } = this.state;
     const domain = entity[0].substring(0, entity[0].indexOf('.'));
 
     return (
       <div>
         <div className={classes.entity}>
-          <i className={classNames('mdi',
-            'mdi-24px',
-            entity[1].attributes.icon ?
-              entity[1].attributes.icon.replace(':', '-')
-              : this.getDefaultIcon(domain),
-            classes.icon)} />
-          <Typography className={classes.label} component="span">
-            {entity[1].attributes.friendly_name}
-          </Typography>
-          <div className={classes.flexGrow} />
+          <div className={classes.clickableArea} onClick={this.handleClick}>
+            <i className={classNames('mdi',
+              'mdi-24px',
+              entity[1].attributes.icon ?
+                entity[1].attributes.icon.replace(':', '-')
+                : this.getDefaultIcon(domain),
+              classes.icon)} />
+            <Typography className={classes.label} component="span">
+              {entity[1].attributes.friendly_name}
+            </Typography>
+            <div className={classes.flexGrow} />
+          </div>
           {domain === 'switch' || domain === 'light' ?
             <Switch
               value="on"
@@ -152,78 +162,80 @@ class StateEntity extends React.Component {
           }
         </div>
         {domain === 'light' && entity[1].state === 'on' &&
-          <div>
-            {entity[1].attributes.brightness &&
-              <div className={classes.attributes}>
-                <i className={classNames('mdi', 'mdi-24px', 'mdi-brightness-6', classes.attributeIcon)} />
-                <div className={classes.container}>
-                  <Typography id="brightness">Brightness</Typography>
-                  <Slider
+          <Collapse in={showAttributes}>
+            <div>
+              {entity[1].attributes.brightness &&
+                <div className={classes.attributes}>
+                  <i className={classNames('mdi', 'mdi-24px', 'mdi-brightness-6', classes.attributeIcon)} />
+                  <div className={classes.container}>
+                    <Typography id="brightness">Brightness</Typography>
+                    <Slider
+                      value={Math.round(entity[1].attributes.brightness)}
+                      min={1}
+                      max={255}
+                      step={1}
+                      aria-labelledby="brightness"
+                      onChange={(event, value) => {
+                        this.handleChange(domain, true, {
+                          entity_id: entity[0],
+                          brightness: Math.round(value)
+                        }, 200);
+                      }} />
+                  </div>
+                  <TextField
+                    id="brightness"
+                    type="number"
+                    inputProps={{
+                      step: 1,
+                      max: 255,
+                    }}
+                    className={classes.attributeState}
                     value={Math.round(entity[1].attributes.brightness)}
-                    min={1}
-                    max={255}
-                    step={1}
-                    aria-labelledby="brightness"
-                    onChange={(event, value) => {
+                    onChange={event => {
                       this.handleChange(domain, true, {
                         entity_id: entity[0],
-                        brightness: Math.round(value)
-                      }, 200);
+                        brightness: Number(event.target.value)
+                      }, 500)
                     }} />
                 </div>
-                <TextField
-                  id="brightness"
-                  type="number"
-                  inputProps={{
-                    step: 1,
-                    max: 255,
-                  }}
-                  className={classes.attributeState}
-                  value={Math.round(entity[1].attributes.brightness)}
-                  onChange={event => {
-                    this.handleChange(domain, true, {
-                      entity_id: entity[0],
-                      brightness: Number(event.target.value)
-                    }, 500)
-                  }} />
-              </div>
-            }
-            {entity[1].attributes.color_temp &&
-              <div className={classes.attributes}>
-                <i className={classNames('mdi', 'mdi-24px', 'mdi-thermometer', classes.attributeIcon)} />
-                <div className={classes.container}>
-                  <Typography id="color_temp">Color Temperature</Typography>
-                  <Slider
+              }
+              {entity[1].attributes.color_temp &&
+                <div className={classes.attributes}>
+                  <i className={classNames('mdi', 'mdi-24px', 'mdi-thermometer', classes.attributeIcon)} />
+                  <div className={classes.container}>
+                    <Typography id="color_temp">Color Temperature</Typography>
+                    <Slider
+                      value={Math.round(entity[1].attributes.color_temp)}
+                      min={entity[1].attributes.min_mireds}
+                      max={entity[1].attributes.max_mireds}
+                      step={1}
+                      aria-labelledby="color_temp"
+                      onChange={(event, value) => {
+                        this.handleChange(domain, true, {
+                          entity_id: entity[0],
+                          color_temp: Math.round(value)
+                        }, 200);
+                      }} />
+                  </div>
+                  <TextField
+                    id="color_temp"
+                    type="number"
+                    inputProps={{
+                      step: 1,
+                      // max: 255,
+                    }}
+                    className={classes.attributeState}
                     value={Math.round(entity[1].attributes.color_temp)}
-                    min={entity[1].attributes.min_mireds}
-                    max={entity[1].attributes.max_mireds}
-                    step={1}
-                    aria-labelledby="color_temp"
-                    onChange={(event, value) => {
+                    onChange={event => {
                       this.handleChange(domain, true, {
                         entity_id: entity[0],
-                        color_temp: Math.round(value)
-                      }, 200);
+                        color_temp: Number(event.target.value)
+                      }, 500)
                     }} />
                 </div>
-                <TextField
-                  id="color_temp"
-                  type="number"
-                  inputProps={{
-                    step: 1,
-                    // max: 255,
-                  }}
-                  className={classes.attributeState}
-                  value={Math.round(entity[1].attributes.color_temp)}
-                  onChange={event => {
-                    this.handleChange(domain, true, {
-                      entity_id: entity[0],
-                      color_temp: Number(event.target.value)
-                    }, 500)
-                  }} />
-              </div>
-            }
-          </div>
+              }
+            </div>
+          </Collapse>
         }
       </div>
     );
