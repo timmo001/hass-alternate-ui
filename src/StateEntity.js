@@ -40,6 +40,7 @@ const styles = theme => ({
     paddingRight: 18,
   },
   attributeIcon: {
+    color: theme.palette.defaultText,
     margin: '0 14px 0 0',
     lineHeight: '32px',
     marginTop: 8,
