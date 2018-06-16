@@ -36,8 +36,8 @@ const styles = theme => ({
   attributes: {
     display: 'inline-flex',
     width: 'calc(100% - 48px)',
-    paddingLeft: 24,
-    paddingRight: 24,
+    paddingLeft: 18,
+    paddingRight: 18,
   },
   attributeIcon: {
     margin: '0 14px 0 0',
@@ -121,9 +121,6 @@ class StateEntity extends React.Component {
     const { classes } = this.props;
     const { entity } = this.state;
     const domain = entity[0].substring(0, entity[0].indexOf('.'));
-
-    if (entity[1].attributes.color_temp)
-      console.log(entity[1].attributes);
 
     return (
       <div>
