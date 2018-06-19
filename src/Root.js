@@ -49,7 +49,7 @@ class Root extends Component {
 
   connectToHASS = () => {
     if (localStorage.getItem('host')) {
-      createConnection(`ws://${localStorage.getItem('host')}/api/websocket`, { authToken: sessionStorage.password })
+      createConnection(`wss://${localStorage.getItem('host')}/api/websocket?latest`, { authToken: sessionStorage.getItem('password') })
         .then(conn => {
           conn.removeEventListener('ready', this.eventHandler);
           conn.addEventListener('ready', this.eventHandler);
@@ -64,7 +64,7 @@ class Root extends Component {
   }
 
   handleChange = (domain, state, data = undefined) => {
-    createConnection(`ws://${localStorage.getItem('host')}/api/websocket`, { authToken: sessionStorage.password })
+    createConnection(`wss://${localStorage.getItem('host')}/api/websocket?latest`, { authToken: sessionStorage.getItem('password') })
       .then(conn => {
         conn.callService(domain, state ? 'turn_on' : 'turn_off', data).then(v => {
           this.setState({ snackMessage: { open: true, text: 'Changed.' } });
