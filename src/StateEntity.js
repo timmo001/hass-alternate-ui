@@ -119,8 +119,8 @@ class StateEntity extends React.Component {
   };
 
   handleChange = (domain, state, data, delay = 0) => {
-    const ms = this.state.showAttributes && !Object.entries(data).length < 2 ? 200 : 0;
-    this.setState({ showAttributes: false });
+    const ms = this.state.showAttributes && Object.entries(data).length < 2 ? 200 : 0;
+    if (Object.entries(data).length < 2) this.setState({ showAttributes: false });
     setTimeout(() => {
       const entity = this.state.entity;
       entity[1].state = state ? 'on' : 'off';
@@ -132,7 +132,6 @@ class StateEntity extends React.Component {
         }, delay);
       });
     }, ms);
-
   };
 
   handleClick = () => this.setState({ showAttributes: !this.state.showAttributes });
