@@ -8,6 +8,8 @@ import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/lab/Slider';
 import TextField from '@material-ui/core/TextField';
 import Collapse from '@material-ui/core/Collapse';
+import { Panel as ColorPickerPanel } from 'material-ui-rc-color-picker';
+import 'material-ui-rc-color-picker/assets/index.css';
 
 var timeoutVar;
 
@@ -59,6 +61,10 @@ const styles = theme => ({
   },
   container: {
     width: '100%',
+  },
+  colorPicker: {
+    margin: '16px auto',
+    color: theme.palette.defaultText,
   },
 });
 
@@ -238,6 +244,19 @@ class StateEntity extends React.Component {
                       }, 500)
                     }} />
                 </div>
+              }
+              {entity[1].attributes.rgb_color &&
+                <ColorPickerPanel
+                  className={classes.colorPicker}
+                  enableAlpha={false}
+                  color={entity[1].attributes.rgb_color}
+                  onChange={value => {
+                    this.handleChange(domain, true, {
+                      entity_id: entity[0],
+                      rgb_color: value.rgb
+                    }, 500)
+                  }}
+                  mode="RGB" />
               }
             </div>
           </Collapse>
