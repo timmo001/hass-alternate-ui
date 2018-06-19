@@ -137,6 +137,24 @@ class StateEntity extends React.Component {
 
   handleClick = () => this.setState({ showAttributes: !this.state.showAttributes });
 
+  componentToHex = c => {
+    var hex = c.toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  }
+
+  rgbToHex = (r, g, b) => {
+    return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
+  }
+
+  convertToRGB = (hex) => {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+      parseInt(result[1], 16),
+      parseInt(result[2], 16),
+      parseInt(result[3], 16)
+    ] : null;
+  };
+
   render() {
     const { classes } = this.props;
     const { entity, showAttributes } = this.state;
@@ -249,11 +267,15 @@ class StateEntity extends React.Component {
                 <ColorPickerPanel
                   className={classes.colorPicker}
                   enableAlpha={false}
-                  color={entity[1].attributes.rgb_color}
+                  color={this.rgbToHex(
+                    entity[1].attributes.rgb_color[0],
+                    entity[1].attributes.rgb_color[1],
+                    entity[1].attributes.rgb_color[2]
+                  )}
                   onChange={value => {
                     this.handleChange(domain, true, {
                       entity_id: entity[0],
-                      rgb_color: value.rgb
+                      rgb_color: this.convertToRGB(value.color)
                     }, 500)
                   }}
                   mode="RGB" />
