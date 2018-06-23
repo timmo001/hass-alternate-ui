@@ -119,19 +119,21 @@ class StateEntity extends React.Component {
   };
 
   handleChange = (domain, state, data, delay = 0) => {
-    const ms = this.state.showAttributes && Object.entries(data).length < 2 ? 200 : 0;
-    if (Object.entries(data).length < 2) this.setState({ showAttributes: false });
-    setTimeout(() => {
-      const entity = this.state.entity;
-      entity[1].state = state ? 'on' : 'off';
-      if (data.brightness) entity[1].attributes.brightness = data.brightness;
-      this.setState({ entity }, () => {
-        clearTimeout(timeoutVar);
-        timeoutVar = setTimeout(() => {
-          this.props.handleChange(domain, state, data);
-        }, delay);
-      });
-    }, ms);
+    const entity = this.state.entity;
+    entity[1].state = state ? 'on' : 'off';
+    if (data.brightness) entity[1].attributes.brightness = data.brightness;
+    if (data.color_temp) entity[1].attributes.color_temp = data.color_temp;
+    if (data.rgb_color) entity[1].attributes.rgb_color = data.rgb_color;
+    this.setState({ entity }, () => {
+      // const ms = this.state.showAttributes && Object.entries(data).length < 2 ? 200 : 0;
+      if (Object.entries(data).length < 2) this.setState({ showAttributes: false });
+      // setTimeout(() => {
+      clearTimeout(timeoutVar);
+      timeoutVar = setTimeout(() => {
+        this.props.handleChange(domain, state, data);
+      }, delay);
+      // }, ms);
+    });
   };
 
   handleClick = () => this.setState({ showAttributes: !this.state.showAttributes });
@@ -207,7 +209,7 @@ class StateEntity extends React.Component {
                         this.handleChange(domain, true, {
                           entity_id: entity[0],
                           brightness: Math.round(value)
-                        }, 200);
+                        }, 500);
                       }} />
                   </div>
                   <TextField
@@ -242,7 +244,7 @@ class StateEntity extends React.Component {
                         this.handleChange(domain, true, {
                           entity_id: entity[0],
                           color_temp: Math.round(value)
-                        }, 200);
+                        }, 500);
                       }} />
                   </div>
                   <TextField
