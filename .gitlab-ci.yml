@@ -34,7 +34,7 @@ hadolint:
   before_script:
     - hadolint --version
   script:
-    - hadolint "${ADDON_TARGET}/Dockerfile"
+    - hadolint "Dockerfile"
 
 shellcheck:
   <<: *preflight
@@ -50,7 +50,7 @@ shellcheck:
   script:
     - |
       for file in $(grep -IRl "#\!\(/usr/bin/env \|/bin/\)" --exclude-dir \
-        ".git" "${ADDON_TARGET}"); do
+        ".git"); do
         if ! shellcheck $file; then
           export FAILED=1
         else
