@@ -50,7 +50,7 @@ shellcheck:
   script:
     - |
       for file in $(grep -IRl "#\!\(/usr/bin/env \|/bin/\)" --exclude-dir \
-        ".git"); do
+        ".git" --exclude ".gitlab-ci.yml"); do
         if ! shellcheck $file; then
           export FAILED=1
         else
