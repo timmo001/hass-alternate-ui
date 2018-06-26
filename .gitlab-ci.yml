@@ -175,12 +175,11 @@ performance:
     - performance
   artifacts:
     paths:
-    - performance.json
-    - sitespeed-results/
+      - performance.json
+      - sitespeed-results/
   only:
     refs:
       - branches
-    # kubernetes: active
   except:
     variables:
       - $PERFORMANCE_DISABLED
