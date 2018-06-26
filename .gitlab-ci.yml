@@ -14,6 +14,7 @@ variables:
   DOCKER_HUB_USER: timmo001
 
 stages:
+  - preflight
   - build
   - test
   - deploy
@@ -26,6 +27,82 @@ stages:
     - name: docker:dind
       command: ["--experimental"]
 
+# Generic preflight template
+.preflight: &preflight
+  stage: preflight
+  tags:
+    - preflight
+
+# Preflight jobs
+hadolint:
+  <<: *preflight
+  image: hadolint/hadolint:v1.6.6
+  before_script:
+    - hadolint --version
+  script:
+    - hadolint "${ADDON_TARGET}/Dockerfile"
+
+shellcheck:
+  <<: *preflight
+  image:
+    name: koalaman/shellcheck-alpine:stable
+    entrypoint: [""]
+  before_script:
+    - shellcheck --version
+    - apk --no-cache add grep
+    - |
+      find . -type f -print0 | \
+        xargs -0 sed -i 's:#!/usr/bin/with-contenv bash:#!/bin/bash:g'
+  script:
+    - |
+      for file in $(grep -IRl "#\!\(/usr/bin/env \|/bin/\)" --exclude-dir ".git" "${ADDON_TARGET}"); do
+        if ! shellcheck $file; then
+          export FAILED=1
+        else
+          echo "$file OK"
+        fi
+      done
+      if [ "${FAILED}" = "1" ]; then
+        exit 1
+      fi
+
+yamllint:
+  <<: *preflight
+  image: sdesbure/yamllint
+  before_script:
+    - yamllint --version
+  script:
+    - yamllint .
+
+jsonlint:
+  <<: *preflight
+  image: sahsu/docker-jsonlint
+  before_script:
+    - jsonlint --version || true
+  script:
+    - |
+      for file in $(find . -type f -name "*.json"); do
+        if ! jsonlint -q $file; then
+          export FAILED=1
+        else
+          echo "$file OK"
+        fi
+      done
+      if [ "${FAILED}" = "1" ]; then
+        exit 1
+      fi
+markdownlint:
+  <<: *preflight
+  image:
+    name: ruby:alpine
+    entrypoint: [""]
+  before_script:
+    - gem install mdl
+    - mdl --version
+  script:
+    - mdl --style all --warnings .
+
+# Build jobs
 build:
   stage: build
   image: docker:stable-git
@@ -39,6 +116,7 @@ build:
   only:
     - branches
 
+# Test jobs
 test:
   services:
     - postgres:latest
@@ -123,6 +201,7 @@ container_scanning:
     variables:
       - $CONTAINER_SCANNING_DISABLED
 
+# Deploy jobs
 deploy: &deploy
   <<: *dind
   stage: deploy
