@@ -5,28 +5,81 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
+import Slider from '@material-ui/lab/Slider';
+import TextField from '@material-ui/core/TextField';
+import Collapse from '@material-ui/core/Collapse';
+import { Panel as ColorPickerPanel } from 'material-ui-rc-color-picker';
+import 'material-ui-rc-color-picker/assets/index.css';
+
+var timeoutVar;
 
 const styles = theme => ({
   entity: {
     display: 'inline-flex',
     width: '100%',
   },
+  clickableArea: {
+    display: 'inline-flex',
+    flexGrow: 1,
+    cursor: 'pointer',
+  },
   icon: {
     color: theme.palette.defaultText,
     margin: '0 14px 0 0',
     lineHeight: '32px',
-    paddingTop: 8,
+    marginTop: 8,
   },
   label: {
     lineHeight: '32px',
-    paddingTop: 8,
+    marginTop: 8,
+  },
+  state: {
+    lineHeight: '32px',
+    marginTop: 8,
+    marginRight: 16,
   },
   flexGrow: {
     flexGrow: 1,
   },
+  attributes: {
+    display: 'inline-flex',
+    width: 'calc(100% - 48px)',
+    paddingLeft: 18,
+    paddingRight: 18,
+  },
+  attributeIcon: {
+    color: theme.palette.defaultText,
+    margin: '0 14px 0 0',
+    lineHeight: '32px',
+    marginTop: 8,
+  },
+  attributeState: {
+    width: 82,
+    marginTop: 18,
+    marginLeft: 16,
+    marginRight: 16,
+  },
+  container: {
+    width: '100%',
+  },
+  colorPicker: {
+    margin: '16px auto',
+    color: theme.palette.defaultText,
+  },
 });
 
 class StateEntity extends React.Component {
+
+  componentWillMount = () => this.setState({ entity: this.props.entity });
+
+  componentWillUpdate = (newProps) => {
+    if (newProps.entity !== this.props.entity)
+      this.setState({ entity: newProps.entity });
+  };
+
+  componentWillUnmount = () => {
+    clearTimeout(timeoutVar);
+  };
 
   getDefaultIcon = domain => {
     switch (domain) {
@@ -65,35 +118,171 @@ class StateEntity extends React.Component {
     }
   };
 
+  handleChange = (domain, state, data, delay = 0) => {
+    const entity = this.state.entity;
+    entity[1].state = state ? 'on' : 'off';
+    if (data.brightness) entity[1].attributes.brightness = data.brightness;
+    if (data.color_temp) entity[1].attributes.color_temp = data.color_temp;
+    if (data.rgb_color) entity[1].attributes.rgb_color = data.rgb_color;
+    this.setState({ entity }, () => {
+      // const ms = this.state.showAttributes && Object.entries(data).length < 2 ? 200 : 0;
+      if (Object.entries(data).length < 2) this.setState({ showAttributes: false });
+      // setTimeout(() => {
+      clearTimeout(timeoutVar);
+      timeoutVar = setTimeout(() => {
+        this.props.handleChange(domain, state, data);
+      }, delay);
+      // }, ms);
+    });
+  };
+
+  handleClick = () => this.setState({ showAttributes: !this.state.showAttributes });
+
+  componentToHex = c => {
+    var hex = c.toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  }
+
+  rgbToHex = (r, g, b) => {
+    return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
+  }
+
+  convertToRGB = (hex) => {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+      parseInt(result[1], 16),
+      parseInt(result[2], 16),
+      parseInt(result[3], 16)
+    ] : null;
+  };
+
   render() {
-    const { classes, entity, handleChange } = this.props;
+    const { classes } = this.props;
+    const { entity, showAttributes } = this.state;
     const domain = entity[0].substring(0, entity[0].indexOf('.'));
 
     return (
-      <div key={entity[0]} className={classes.entity}>
-        <i className={classNames('mdi',
-          'mdi-24px',
-          entity[1].attributes.icon ?
-            entity[1].attributes.icon.replace(':', '-')
-            : this.getDefaultIcon(domain),
-          classes.icon)} />
-        <Typography className={classes.label} component="span">
-          {entity[1].attributes.friendly_name}
-        </Typography>
-        <div className={classes.flexGrow} />
-        {domain === 'switch' | domain === 'light' ?
-          <Switch
-            value="on"
-            checked={entity[1].state === 'on'}
-            onChange={event => handleChange(domain, event.target.checked, { entity_id: entity[0] })} />
-          : domain === 'scene' | domain === 'script' ?
-            <Button color="secondary" onClick={() => handleChange(domain, true, { entity_id: entity[0] })}>
-              Activate
-            </Button>
-            :
+      <div>
+        <div className={classes.entity}>
+          <div className={classes.clickableArea} onClick={this.handleClick}>
+            <i className={classNames('mdi',
+              'mdi-24px',
+              entity[1].attributes.icon ?
+                entity[1].attributes.icon.replace(':', '-')
+                : this.getDefaultIcon(domain),
+              classes.icon)} />
             <Typography className={classes.label} component="span">
-              {entity[1].state}
+              {entity[1].attributes.friendly_name}
             </Typography>
+            <div className={classes.flexGrow} />
+          </div>
+          {domain === 'switch' || domain === 'light' ?
+            <Switch
+              value="on"
+              checked={entity[1].state === 'on'}
+              onChange={event => this.handleChange(domain, event.target.checked, { entity_id: entity[0] })} />
+            : domain === 'scene' | domain === 'script' ?
+              <Button color="secondary" onClick={() => this.handleChange(domain, true, { entity_id: entity[0] })}>
+                Activate
+              </Button>
+              :
+              <Typography className={classes.state} component="span">
+                {entity[1].state}
+              </Typography>
+          }
+        </div>
+        {domain === 'light' && entity[1].state === 'on' &&
+          <Collapse in={showAttributes}>
+            <div>
+              {entity[1].attributes.brightness &&
+                <div className={classes.attributes}>
+                  <i className={classNames('mdi', 'mdi-24px', 'mdi-brightness-6', classes.attributeIcon)} />
+                  <div className={classes.container}>
+                    <Typography id="brightness">Brightness</Typography>
+                    <Slider
+                      value={Math.round(entity[1].attributes.brightness)}
+                      min={1}
+                      max={255}
+                      step={1}
+                      aria-labelledby="brightness"
+                      onChange={(event, value) => {
+                        this.handleChange(domain, true, {
+                          entity_id: entity[0],
+                          brightness: Math.round(value)
+                        }, 500);
+                      }} />
+                  </div>
+                  <TextField
+                    id="brightness"
+                    type="number"
+                    inputProps={{
+                      step: 1,
+                      max: 255,
+                    }}
+                    className={classes.attributeState}
+                    value={Math.round(entity[1].attributes.brightness)}
+                    onChange={event => {
+                      this.handleChange(domain, true, {
+                        entity_id: entity[0],
+                        brightness: Number(event.target.value)
+                      }, 500)
+                    }} />
+                </div>
+              }
+              {entity[1].attributes.color_temp &&
+                <div className={classes.attributes}>
+                  <i className={classNames('mdi', 'mdi-24px', 'mdi-thermometer', classes.attributeIcon)} />
+                  <div className={classes.container}>
+                    <Typography id="color_temp">Color Temperature</Typography>
+                    <Slider
+                      value={Math.round(entity[1].attributes.color_temp)}
+                      min={entity[1].attributes.min_mireds}
+                      max={entity[1].attributes.max_mireds}
+                      step={1}
+                      aria-labelledby="color_temp"
+                      onChange={(event, value) => {
+                        this.handleChange(domain, true, {
+                          entity_id: entity[0],
+                          color_temp: Math.round(value)
+                        }, 500);
+                      }} />
+                  </div>
+                  <TextField
+                    id="color_temp"
+                    type="number"
+                    inputProps={{
+                      step: 1,
+                      // max: 255,
+                    }}
+                    className={classes.attributeState}
+                    value={Math.round(entity[1].attributes.color_temp)}
+                    onChange={event => {
+                      this.handleChange(domain, true, {
+                        entity_id: entity[0],
+                        color_temp: Number(event.target.value)
+                      }, 500)
+                    }} />
+                </div>
+              }
+              {entity[1].attributes.rgb_color &&
+                <ColorPickerPanel
+                  className={classes.colorPicker}
+                  enableAlpha={false}
+                  color={this.rgbToHex(
+                    entity[1].attributes.rgb_color[0],
+                    entity[1].attributes.rgb_color[1],
+                    entity[1].attributes.rgb_color[2]
+                  )}
+                  onChange={value => {
+                    this.handleChange(domain, true, {
+                      entity_id: entity[0],
+                      rgb_color: this.convertToRGB(value.color)
+                    }, 500)
+                  }}
+                  mode="RGB" />
+              }
+            </div>
+          </Collapse>
         }
       </div>
     );
